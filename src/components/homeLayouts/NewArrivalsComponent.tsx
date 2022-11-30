@@ -7,7 +7,6 @@ import {
 import { getProductsByFilter } from "../../services/productService";
 import { useEffect, useState } from "react";
 import { Pagination, PaginationProps } from "antd";
-import { setLoading } from "../../redux/slices/userSlice";
 
 const NewArrivalsComponent = () => {
   const dispatch = useAppDispatch();

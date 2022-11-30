@@ -57,5 +57,28 @@ export const currentAdmin = async (token: string) => {
   }
 };
 
+// save the user address
+export const saveAddress = async (
+  token: string,
+  address: {
+    country: string;
+    city: string;
+    address: string;
+  }
+) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_API}/auth/save-address`,
+      { address },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-
+    return data;
+  } catch (error) {
+    error instanceof Error ? console.log(error.message) : console.log(error);
+  }
+};

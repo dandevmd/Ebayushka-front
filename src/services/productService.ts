@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IProduct } from "../redux/slices/productSlice";
+import { Icart, IProduct, IproductInCart } from "../redux/slices/productSlice";
 
 export const postProduct = async (token: string, product: IProduct) => {
   try {
@@ -83,11 +83,53 @@ export const getProductBySlug = async (slug: string) => {
   }
 };
 
+export const fetchProductsByQuery = async (
+  filter: {
+    price?: [number, number] | null;
+    category?: string | null;
+    rating?: number | null;
+    color?: string | null;
+  },
+  query?: string | null
+) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_API}/products/search/filters`,
+      { ...filter, query }
+    );
+    return data;
+  } catch (error) {
+    error instanceof Error ? console.log(error.message) : console.log(error);
+  }
+};
+
+export const getProductsByCategory = async (category: string) => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_API}/products/category/${category}`
+    );
+
+    return data;
+  } catch (error) {
+    error instanceof Error ? console.log(error.message) : console.log(error);
+  }
+};
+export const getProductsBySubCategory = async (sub: string) => {
+  try {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_API}/products/sub/${sub}`
+    );
+
+    return data;
+  } catch (error) {
+    error instanceof Error ? console.log(error.message) : console.log(error);
+  }
+};
+
 export const getRelatedProducts = async (productId: string) => {
   try {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/products/related/${productId}`, 
-      
+      `${process.env.REACT_APP_API}/products/related/${productId}`
     );
 
     return data;
@@ -169,3 +211,5 @@ export const rateProductRequest = async (
     error instanceof Error ? console.log(error.message) : console.log(error);
   }
 };
+
+

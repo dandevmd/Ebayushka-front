@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, gProvider } from "../../firebase";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../redux/slices/userSlice";
 import { createOrUpdateUser } from "../../services/auth";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
@@ -13,11 +13,23 @@ import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { user: reduxUser } = useAppSelector((state) => state.user);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
+
+  const prevRouteNav = () => {
+    const previousRouteLs = localStorage.getItem("previous_user_route");
+    const prevRouteParsed = previousRouteLs
+      ? JSON.parse(previousRouteLs)
+      : null;
+    const prevRoute = prevRouteParsed && prevRouteParsed?.from;
+
+    prevRoute === "/cart" ? navigate("/cart") : navigate("/");
+    localStorage.removeItem("previous_user_route");
+  };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -45,7 +57,8 @@ const LoginPage = () => {
       const userFromMongo = await createOrUpdateUser(token);
       //I don't need dispatch here because of useEffect from App.ts and the redirect. It redirects me, then useEffect grabs the token and email
       dispatch(login({ ...userFromMongo, token }));
-      userFromMongo?.role === "admin" ? navigate("/") : navigate("/");
+
+      prevRouteNav();
     } catch (error) {
       toast.error("Wrong credentials. Try again.");
       error instanceof Error ? console.log(error.message) : console.log(error);
@@ -67,7 +80,7 @@ const LoginPage = () => {
       dispatch(login({ ...userFromMongo, token }));
 
       //Let use effect form App to work
-      userFromMongo?.role === "admin" ? navigate("/") : navigate("/");
+      prevRouteNav();
     } catch (error) {
       error instanceof Error ? console.log(error.message) : console.log(error);
     }

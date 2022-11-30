@@ -32,7 +32,7 @@ const ProductDescriptionListComponent: React.FC<IcomponentProps> = ({
       <li className="list-group-item">
         Price:{" "}
         <span className="label label-default labe-pill pull-xs-right">
-          {price}
+          {price} $
         </span>{" "}
       </li>{" "}
       <li className="list-group-item">

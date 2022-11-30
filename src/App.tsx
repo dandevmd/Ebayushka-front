@@ -18,8 +18,7 @@ import { getAll } from "./services/categoryServ";
 import { getAllSubs } from "./services/subCategoryServ";
 import { getAllSubCategories } from "./redux/slices/subCategorySlice";
 import "./index.css";
-
-
+import CartSideBarComponent from "./components/CartSideBarComponent";
 
 function App() {
   const dispatch = useAppDispatch();

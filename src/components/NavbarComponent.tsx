@@ -1,22 +1,28 @@
 import { useState } from "react";
-import { Menu } from "antd";
+import { Menu, Badge } from "antd";
 import {
   AppstoreOutlined,
   SettingOutlined,
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  ShopOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/slices/userSlice";
 import { logoutFromFirebase } from "../firebase";
+import SearchComponent from "./SearchComponent";
+import { resetQuery } from "../redux/slices/filterSlice";
 
 const { SubMenu, Item } = Menu;
 
 const NavbarComponent = () => {
-  const [current, setCurrent] = useState("home");
   const { user } = useAppSelector((state) => state.user);
+  const { cart } = useAppSelector((state) => state.product);
+
+  const [current, setCurrent] = useState("home");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -36,6 +42,32 @@ const NavbarComponent = () => {
         <Link to="/">Home</Link>
       </Item>
 
+      <Item
+        key="shop"
+        icon={<ShopOutlined />}
+        onClick={() => dispatch(resetQuery())}
+      >
+        <Link to="/shop">Shop</Link>
+      </Item>
+
+      <Item
+        key="cart"
+        icon={<ShoppingCartOutlined />}
+        onClick={() => navigate("/cart")}
+        className="position-relative"
+      >
+        <Badge
+          count={cart ? cart.length : null}
+          style={{
+            position: "absolute",
+            top: "-3px",
+            right: "-15px",
+          }}
+        >
+          Cart
+        </Badge>
+      </Item>
+
       {user && (
         <SubMenu
           style={{
@@ -46,7 +78,7 @@ const NavbarComponent = () => {
           title={user && user.email.split("@")[0]}
           key="username"
         >
-          <Item key='option:1'>
+          <Item key="option:1">
             <Link
               to={
                 user && user.role === "subscriber"
@@ -93,6 +125,16 @@ const NavbarComponent = () => {
           <Link to="/register">Register</Link>
         </Item>
       )}
+
+      <Item
+        key="search"
+        style={{
+          position: "absolute",
+          right: "200px",
+        }}
+      >
+        <SearchComponent />
+      </Item>
     </Menu>
   );
 };

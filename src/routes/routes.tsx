@@ -15,6 +15,11 @@ import UserPasswordPage from "../pages/user/UserPasswordPage";
 import UserWishlistPage from "../pages/user/UserWishlistPage";
 import AdminSubCategoryItemPage from "../pages/admin/sub-category/AdminSubCategoryItemPage";
 import SingleProductPage from "../pages/SingleProductPage";
+import CategoryProductsPage from "../pages/CategoryProductsPage";
+import SubCategoryProductsPage from "../pages/SubCategoryProductsPage";
+import ShopPage from "../pages/ShopPage";
+import CartPage from "../pages/CartPage";
+import CheckoutPage from "../pages/CheckoutPage";
 
 export const publicRoutes = [
   {
@@ -37,6 +42,10 @@ export const publicRoutes = [
     path: "/product/:slug",
     element: <SingleProductPage />,
   },
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
 ];
 
 export const userRoutes = [
@@ -56,16 +65,56 @@ export const userRoutes = [
     path: "/product/:slug",
     element: <SingleProductPage />,
   },
+  {
+    path: "/category/:slug",
+    element: <CategoryProductsPage />,
+  },
+  {
+    path: "/sub/:slug",
+    element: <SubCategoryProductsPage />,
+  },
+  {
+    path: "/shop",
+    element: <ShopPage />,
+  },
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
+  {
+    path: "/checkout",
+    element: <CheckoutPage />,
+  },
 ];
 
 export const adminRoutes = [
   {
-    path: "/admin/dashboard",
-    element: <AdminDashboardPage />,
+    path: "/checkout",
+    element: <CheckoutPage />,
+  },
+  {
+    path: "/shop",
+    element: <ShopPage />,
+  },
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
+  {
+    path: "/category/:slug",
+    element: <CategoryProductsPage />,
+  },
+  {
+    path: "/sub/:slug",
+    element: <SubCategoryProductsPage />,
   },
   {
     path: "/product/:slug",
     element: <SingleProductPage />,
+  },
+  {
+    path: "/admin/dashboard",
+    element: <AdminDashboardPage />,
   },
   {
     path: "/admin/products",

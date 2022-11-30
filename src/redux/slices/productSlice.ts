@@ -30,8 +30,19 @@ export interface IProduct {
   ratings: Trating[];
 }
 
+export interface IproductInCart extends IProduct {
+  count: number;
+}
+
+export interface Icart {
+  cart: IproductInCart[];
+}
+
+const getCartFromLs = localStorage.getItem("ebayushka_cart");
+
 export interface IproductState {
   products: IProduct[];
+  cart: IproductInCart[];
   newestArrivedProducts: {
     sortedProducts: IProduct[];
     countDocuments: number;
@@ -40,8 +51,11 @@ export interface IproductState {
     sortedProducts: IProduct[];
     countDocuments: number;
   };
+  byCategory: IProduct[];
+  bySub: IProduct[];
   product: IProduct;
   relatedProducts: IProduct[];
+  byFilter: IProduct[];
 }
 
 type TcreateProductAction = {
@@ -64,6 +78,12 @@ type TgetFilteredProductAction = {
     countDocuments: number;
   };
 };
+type TbyCategoryAction = {
+  payload: IProduct[];
+};
+type TbySub = {
+  payload: IProduct[];
+};
 type TgetSingleProductAction = {
   payload: IProduct;
 };
@@ -71,9 +91,30 @@ type TgetSingleProductAction = {
 type TgetRelatedProductsAction = {
   payload: IProduct[];
 };
+type TgetProductsByFilter = {
+  payload: IProduct[];
+};
+
+type TaddItemToCart = {
+  payload: IproductInCart;
+};
+type TremoveItemFromCart = {
+  payload: IproductInCart[];
+};
+type TincreaseOrdecreaseCartItemQuantity = {
+  payload: IproductInCart[];
+};
+type TchangeColor = {
+  payload: IproductInCart[];
+};
 
 const initialState: IproductState = {
   products: [] as IProduct[],
+  cart: getCartFromLs ? JSON.parse(getCartFromLs) : ([] as IproductInCart[]),
+  product: {} as IProduct,
+  byCategory: [] as IProduct[],
+  bySub: [] as IProduct[],
+  relatedProducts: [] as IProduct[],
   newestArrivedProducts: {
     sortedProducts: [] as IProduct[],
     countDocuments: 0,
@@ -82,8 +123,7 @@ const initialState: IproductState = {
     sortedProducts: [] as IProduct[],
     countDocuments: 0,
   },
-  product: {} as IProduct,
-  relatedProducts: [] as IProduct[],
+  byFilter: [] as IProduct[],
 };
 
 const produtcSlice = createSlice({
@@ -146,6 +186,54 @@ const produtcSlice = createSlice({
     ) => {
       state.relatedProducts = action.payload;
     },
+    getByCategory: (
+      state: IproductState = initialState,
+      action: TbyCategoryAction
+    ) => {
+      state.byCategory = action.payload;
+    },
+    getBySub: (state: IproductState = initialState, action: TbySub) => {
+      state.bySub = action.payload;
+    },
+    getByFilter: (
+      state: IproductState = initialState,
+      action: TgetProductsByFilter
+    ) => {
+      state.byFilter = action.payload;
+    },
+    addProductTocart: (state: Icart = initialState, action: TaddItemToCart) => {
+      state.cart.push(action.payload);
+      localStorage.setItem("ebayushka_cart", JSON.stringify(state.cart));
+    },
+    removeFromCart: (
+      state: Icart = initialState,
+      action: TremoveItemFromCart
+    ) => {
+      state.cart = action.payload;
+      localStorage.setItem("ebayushka_cart", JSON.stringify(state.cart));
+    },
+    increaseCartQty: (
+      state: Icart = initialState,
+      action: TincreaseOrdecreaseCartItemQuantity
+    ) => {
+      state.cart = action.payload;
+      localStorage.setItem("ebayushka_cart", JSON.stringify(state.cart));
+    },
+    decreaseCartQty: (
+      state: Icart = initialState,
+      action: TincreaseOrdecreaseCartItemQuantity
+    ) => {
+      state.cart = action.payload;
+      localStorage.setItem("ebayushka_cart", JSON.stringify(state.cart));
+    },
+    changeItemColor: (state: Icart = initialState, action: TchangeColor) => {
+      state.cart = action.payload;
+      localStorage.setItem("ebayushka_cart", JSON.stringify(state.cart));
+    },
+    emptyCart: (state: Icart = initialState) => {
+      state.cart = [];
+      localStorage.removeItem("ebayushka_cart");
+    },
   },
 });
 
@@ -158,6 +246,15 @@ export const {
   getBestSelled,
   getSingleProduct,
   gotRelatedProducts,
+  getByCategory,
+  getBySub,
+  getByFilter,
+  addProductTocart,
+  removeFromCart,
+  increaseCartQty,
+  decreaseCartQty,
+  changeItemColor,
+  emptyCart,
 } = produtcSlice.actions;
 
 export default produtcSlice.reducer;

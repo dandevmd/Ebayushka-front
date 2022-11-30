@@ -9,8 +9,10 @@ import {
 import { deleteProductById } from "../services/productService";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { addProductTocart } from "../redux/slices/productSlice";
+import CardSideBarComponent from "../components/CartSideBarComponent";
+import { toggleDrawer } from "../redux/slices/cartDrawerSlice";
 
 interface IcomponentProps {
   instance?: string;
@@ -21,9 +23,15 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
     products,
     newestArrivedProducts,
     bestSelledProducts,
+    byCategory,
+    bySub,
+    byFilter,
     relatedProducts,
   } = useAppSelector((state) => state.product);
+  const { cart } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
+  const { drawer } = useAppSelector((state) => state.drawerRed);
+  const { pathname } = useLocation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -34,6 +42,19 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
     toast.success("Product was successfully deleted");
   };
 
+  const handleAddToCart = (p: IProduct) => {
+    const existingItem = cart && cart.find((i: IProduct) => i._id === p._id);
+    if (existingItem) return;
+    dispatch(addProductTocart({ ...p, count: 1 }));
+   cart.length >=1 && toast.success("Item added to the cart.");
+  };
+
+  const addToCartFromCover = (p: IProduct) => {
+    return !cart.length
+      ? (handleAddToCart(p), dispatch(toggleDrawer()))
+      : handleAddToCart(p);
+  };
+
   const productsToMapByInstance = () => {
     switch (instance) {
       case "new-arrivals":
@@ -42,6 +63,12 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
         return bestSelledProducts.sortedProducts;
       case "related-products":
         return relatedProducts;
+      case "products-by-category":
+        return byCategory;
+      case "products-by-sub-category":
+        return bySub;
+      case "products-by-filter":
+        return byFilter;
       case "all-products":
         return products;
 
@@ -50,11 +77,12 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
     }
   };
 
+
   return (
     <>
       {productsToMapByInstance().map((p: IProduct) => {
         return (
-          <div className="col-md-4" key={p._id}>
+          <div className="col-md-4 " key={p._id && p._id}>
             {p?.ratings?.length > 0 ? (
               <div className="d-flex justify-content-center  align-items-center ">
                 <Rate
@@ -82,7 +110,7 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
                     objectFit: "cover",
                   }}
                   src={
-                    p.images.length > 0
+                    p.images && p.images.length > 0
                       ? p.images[0].secure_url
                       : "/images/default-image.png"
                   }
@@ -90,7 +118,7 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
                 />
               }
               actions={
-                instance && instance === "all-products"
+                pathname && pathname === "/admin/products"
                   ? [
                       <>
                         <EditOutlined
@@ -120,13 +148,13 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
                         />{" "}
                         <br /> View Product
                       </>,
-                      <>
+                      <div onClick={() => addToCartFromCover(p)}>
                         <ShoppingCartOutlined
                           className="text-danger"
                           key="cart"
                         />{" "}
                         <br /> Add to Cart
-                      </>,
+                      </div>,
                     ]
               }
               className="m-3"
@@ -141,6 +169,7 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
           </div>
         );
       })}
+      <CardSideBarComponent />
     </>
   );
 };

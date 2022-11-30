@@ -27,6 +27,7 @@ const ApplicationRouter = () => {
     checkAdmin();
   }, [user]);
 
+  //try to wrap products in useMemo to avoid no found page
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
