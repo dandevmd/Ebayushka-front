@@ -20,6 +20,7 @@ import SubCategoryProductsPage from "../pages/SubCategoryProductsPage";
 import ShopPage from "../pages/ShopPage";
 import CartPage from "../pages/CartPage";
 import CheckoutPage from "../pages/CheckoutPage";
+import EndCheckoutPage from "../pages/EndCheckoutPage";
 
 export const publicRoutes = [
   {
@@ -85,9 +86,17 @@ export const userRoutes = [
     path: "/checkout",
     element: <CheckoutPage />,
   },
+  {
+    path: "/end-checkout",
+    element: <EndCheckoutPage />,
+  },
 ];
 
 export const adminRoutes = [
+  {
+    path: "/end-checkout",
+    element: <EndCheckoutPage />,
+  },
   {
     path: "/checkout",
     element: <CheckoutPage />,

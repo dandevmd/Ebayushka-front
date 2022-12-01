@@ -3,16 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddressInput from "../components/AddressInput";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { updateDiscountPrice } from "../redux/slices/couponSlice";
 import { emptyCart as emptyCartFront } from "../redux/slices/productSlice";
 import { saveAddress } from "../services/auth";
 import { getCart, removeCart } from "../services/cartService";
+import { verifiedCoupon } from "../services/couponService";
 
 const CheckoutPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.user);
   const { cart } = useAppSelector((state) => state.product);
+  const { discountedPrice } = useAppSelector((state) => state.coupon);
   const [cartFromBack, setCartFromBack] = useState<any>({});
+  const [coupon, setCoupon] = useState("");
   const [address, setAddress] = useState({
     country: "",
     city: "",
@@ -61,8 +65,24 @@ const CheckoutPage = () => {
       const data = await saveAddress(user?.token, address);
       if (data.ok) {
         refreshAddress();
-        toast.success("Order successfully placed");
+        toast.success("Order successfully saved");
+        navigate('/end-checkout')
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const verifyCoupon = async () => {
+    try {
+      const data = await verifiedCoupon(user.token, coupon.toUpperCase());
+      if (data?.totalAfterDiscount) {
+        dispatch(updateDiscountPrice(data?.totalAfterDiscount));
+        toast.success("Congratulations you have a discount");
+        return;
+      }
+      toast.error("Your coupon is not valid");
+      setCoupon("");
     } catch (error) {
       console.log(error);
     }
@@ -79,7 +99,21 @@ const CheckoutPage = () => {
         <AddressInput addressChangeHandler={addressChangeHandler} />
         <hr />
         <br />
-        <button className="btn btn-primary-outlined mt-2 ">Save</button>
+        <div>
+          <h4>Got coupon ?</h4>
+          <>
+            <label htmlFor="coupon">Enter below</label>
+            <input
+              type="text"
+              id="coupon"
+              className="form-control"
+              onChange={(e) => setCoupon(e.target.value)}
+            />
+            <button className="btn btn-primary" onClick={verifyCoupon}>
+              Apply
+            </button>
+          </>
+        </div>
       </div>
 
       <div className="col-md-6">
@@ -98,18 +132,25 @@ const CheckoutPage = () => {
             );
           })}
         <hr />
-        <div>Total: {cartFromBack?.cartTotal} $</div>
+        <div>
+          <p>Total: ${cartFromBack?.cartTotal} $</p>
+          {discountedPrice && (
+            <span className="btn-success p-2 disabled">
+              Discounted Price : {discountedPrice} $
+            </span>
+          )}
+        </div>
         <div className="d-flex flex-row justify-content-between align-items-center mt-5">
           <button
             className="btn btn-primary"
             onClick={saveUserAddress}
             disabled={
               !address.country ||
-              address.country.length < 6 ||
+              address.country.length < 3 ||
               !address.city ||
-              address.city.length < 6 ||
+              address.city.length < 3 ||
               !address.address ||
-              address.address.length < 6
+              address.address.length < 3
             }
           >
             Place Order
