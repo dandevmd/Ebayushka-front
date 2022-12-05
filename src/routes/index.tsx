@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { publicRoutes, userRoutes, adminRoutes } from "./routes";
 import { Routes, Route } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
@@ -6,6 +6,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import HomePage from "../pages/HomePage";
 import { currentAdmin } from "../services/auth";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 const ApplicationRouter = () => {
   const { user } = useAppSelector((state) => state.user);
@@ -29,30 +30,32 @@ const ApplicationRouter = () => {
 
   //try to wrap products in useMemo to avoid no found page
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      {!user ? (
-        publicRoutes.map((r: { path: string; element: JSX.Element }) => (
-          <Route path={r.path} element={r.element} key={r.path + 1} />
-        ))
-      ) : (
-        <Route path="*" element={<NotFoundPage />} />
-      )}
-      {user && (user.role === "subscriber" || isAdmin) ? (
-        userRoutes.map((r: { path: string; element: JSX.Element }) => (
-          <Route path={r.path} element={r.element} key={r.path + 1} />
-        ))
-      ) : (
-        <Route path="*" element={<NotFoundPage />} />
-      )}
-      {user && isAdmin ? (
-        adminRoutes.map((r: { path: string; element: JSX.Element }) => (
-          <Route path={r.path} element={r.element} key={r.path + 1} />
-        ))
-      ) : (
-        <Route path="*" element={<NotFoundPage />} />
-      )}
-    </Routes>
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        {!user ? (
+          publicRoutes.map((r: { path: string; element: JSX.Element }) => (
+            <Route path={r.path} element={r.element} key={r.path + 1} />
+          ))
+        ) : (
+          <Route path="*" element={<NotFoundPage />} />
+        )}
+        {user && (user.role === "subscriber" || isAdmin) ? (
+          userRoutes.map((r: { path: string; element: JSX.Element }) => (
+            <Route path={r.path} element={r.element} key={r.path + 1} />
+          ))
+        ) : (
+          <Route path="*" element={<NotFoundPage />} />
+        )}
+        {user && isAdmin ? (
+          adminRoutes.map((r: { path: string; element: JSX.Element }) => (
+            <Route path={r.path} element={r.element} key={r.path + 1} />
+          ))
+        ) : (
+          <Route path="*" element={<NotFoundPage />} />
+        )}
+      </Routes>
+    </Suspense>
   );
 };
 

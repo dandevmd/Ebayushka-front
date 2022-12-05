@@ -1,26 +1,49 @@
-import AdminCategoryItemPage from "../pages/admin/category/AdminCategoryItemPage";
-import AdminCategoryPage from "../pages/admin/category/AdminCategoryPage";
-import AdminCouponPage from "../pages/admin/AdminCouponPage";
-import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
-import AdminPasswordPage from "../pages/admin/AdminPasswordPage";
-import AdminProductItemPage from "../pages/admin/product/AdminProductItemPage";
-import AdminProductsPage from "../pages/admin/product/AdminProductsPage";
-import AdminSubCategoryPage from "../pages/admin/sub-category/AdminSubCategoryPage";
-import LoginPage from "../pages/auth/LoginPage";
-import RegisterCompletedPage from "../pages/auth/RegisterCompletedPage";
-import RegisterPage from "../pages/auth/RegisterPage";
-import ForgotPassword from "../pages/ForgotPassword";
-import UserHistoryPage from "../pages/user/UserHistoryPage";
-import UserPasswordPage from "../pages/user/UserPasswordPage";
-import UserWishlistPage from "../pages/user/UserWishlistPage";
-import AdminSubCategoryItemPage from "../pages/admin/sub-category/AdminSubCategoryItemPage";
-import SingleProductPage from "../pages/SingleProductPage";
-import CategoryProductsPage from "../pages/CategoryProductsPage";
-import SubCategoryProductsPage from "../pages/SubCategoryProductsPage";
-import ShopPage from "../pages/ShopPage";
-import CartPage from "../pages/CartPage";
-import CheckoutPage from "../pages/CheckoutPage";
-import EndCheckoutPage from "../pages/EndCheckoutPage";
+import { lazy } from "react";
+const AdminCategoryItemPage = lazy(
+  () => import("../pages/admin/category/AdminCategoryItemPage")
+);
+const AdminCategoryPage = lazy(
+  () => import("../pages/admin/category/AdminCategoryPage")
+);
+const AdminCouponPage = lazy(() => import("../pages/admin/AdminCouponPage"));
+const AdminDashboardPage = lazy(
+  () => import("../pages/admin/AdminDashboardPage")
+);
+const AdminPasswordPage = lazy(
+  () => import("../pages/admin/AdminPasswordPage")
+);
+const AdminProductItemPage = lazy(
+  () => import("../pages/admin/product/AdminProductItemPage")
+);
+const AdminProductsPage = lazy(
+  () => import("../pages/admin/product/AdminProductsPage")
+);
+const AdminSubCategoryPage = lazy(
+  () => import("../pages/admin/sub-category/AdminSubCategoryPage")
+);
+const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
+const RegisterCompletedPage = lazy(
+  () => import("../pages/auth/RegisterCompletedPage")
+);
+const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
+const ForgotPassword = lazy(() => import("../pages/ForgotPassword"));
+const UserHistoryPage = lazy(() => import("../pages/user/UserHistoryPage"));
+const UserPasswordPage = lazy(() => import("../pages/user/UserPasswordPage"));
+const UserWishlistPage = lazy(() => import("../pages/user/UserWishlistPage"));
+const AdminSubCategoryItemPage = lazy(
+  () => import("../pages/admin/sub-category/AdminSubCategoryItemPage")
+);
+const SingleProductPage = lazy(() => import("../pages/SingleProductPage"));
+const CategoryProductsPage = lazy(
+  () => import("../pages/CategoryProductsPage")
+);
+const SubCategoryProductsPage = lazy(
+  () => import("../pages/SubCategoryProductsPage")
+);
+const ShopPage = lazy(() => import("../pages/ShopPage"));
+const CartPage = lazy(() => import("../pages/CartPage"));
+const CheckoutPage = lazy(() => import("../pages/CheckoutPage"));
+const EndCheckoutPage = lazy(() => import("../pages/EndCheckoutPage"));
 
 export const publicRoutes = [
   {
@@ -94,6 +117,10 @@ export const userRoutes = [
 
 export const adminRoutes = [
   {
+    path: "/user/history",
+    element: <UserHistoryPage />,
+  },
+  {
     path: "/end-checkout",
     element: <EndCheckoutPage />,
   },
@@ -159,6 +186,6 @@ export const adminRoutes = [
   },
   {
     path: "/admin/password",
-    element: <AdminPasswordPage />,
+    element: <UserPasswordPage />,
   },
 ];

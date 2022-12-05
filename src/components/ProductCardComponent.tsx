@@ -46,7 +46,7 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
     const existingItem = cart && cart.find((i: IProduct) => i._id === p._id);
     if (existingItem) return;
     dispatch(addProductTocart({ ...p, count: 1 }));
-   cart.length >=1 && toast.success("Item added to the cart.");
+    cart.length >= 1 && toast.success("Item added to the cart.");
   };
 
   const addToCartFromCover = (p: IProduct) => {
@@ -76,7 +76,6 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
         return products;
     }
   };
-
 
   return (
     <>
@@ -148,10 +147,12 @@ const ProductCardComponent: React.FC<IcomponentProps> = ({ instance }) => {
                         />{" "}
                         <br /> View Product
                       </>,
-                      <div onClick={() => addToCartFromCover(p)}>
+                      <div>
                         <ShoppingCartOutlined
                           className="text-danger"
                           key="cart"
+                          onClick={() => addToCartFromCover(p)}
+                          disabled={p.quantity === 0}
                         />{" "}
                         <br /> Add to Cart
                       </div>,

@@ -16,14 +16,15 @@ const CartPage = () => {
     }, 0);
   };
 
-  const saveOrderToDb = async () => {
+  const saveCartToDb = async () => {
     try {
-      const savedOrder = await saveUserCart(user?.token, cart);
-      savedOrder.ok
+      const savedCart = await saveUserCart(user?.token, cart );
+      
+      savedCart.ok
         ? navigate("/checkout")
-        : toast.error("Unable to save the order to db.");
+        : toast.error("Unable to save the cart to db.");
     } catch (error) {
-      toast.error("Was unable to save your order.");
+      toast.error("Was unable to save your cart.");
       console.log(error);
     }
   };
@@ -36,6 +37,7 @@ const CartPage = () => {
     );
     return x;
   };
+
 
   return (
     <div className="container-fluid pt-2">
@@ -68,7 +70,7 @@ const CartPage = () => {
           )}
         </div>
         <div className="col-md-4">
-          <h4>Order Summary</h4>
+          <h4>Cart Summary</h4>
           <hr />
           <p>Products</p>
           {cart.map((c, i) => (
@@ -85,7 +87,7 @@ const CartPage = () => {
             <button
               className="btn btn-sm btn-primary mt-2"
               disabled={!cart.length}
-              onClick={saveOrderToDb}
+              onClick={saveCartToDb}
             >
               Proceed to Checkout
             </button>

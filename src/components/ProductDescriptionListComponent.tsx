@@ -87,7 +87,13 @@ const ProductDescriptionListComponent: React.FC<IcomponentProps> = ({
       </li>{" "}
       <li className="list-group-item">
         Available:{" "}
-        <span className="label label-default labe-pill pull-xs-right">
+        <span
+          className={
+            !quantity
+              ? "label label-default labe-pill pull-xs-right text-danger"
+              : "label label-default labe-pill pull-xs-right"
+          }
+        >
           {quantity}
         </span>{" "}
       </li>{" "}

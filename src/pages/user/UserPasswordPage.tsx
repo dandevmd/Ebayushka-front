@@ -5,8 +5,11 @@ import { updatePassword } from "firebase/auth";
 import Loader from "../../components/Loader";
 import UserSideBarComponent from "../../components/sidebar/UserSideBarComponent";
 import { toast } from "react-toastify";
+import { useAppSelector } from "../../redux/hooks";
+import AdminSideBarComponent from "../../components/sidebar/AdminSideBarComponent";
 
 const UserPasswordPage = () => {
+  const { user } = useAppSelector((state) => state.user);
   const [form, setForm] = useState({
     newPassword: "",
     loading: false,
@@ -31,7 +34,11 @@ const UserPasswordPage = () => {
     <div className="container-fluid">
       <div className="row">
         <div className="col-md-2">
-          <UserSideBarComponent />
+          {user.role === 'admin' ? (
+            <AdminSideBarComponent />
+          ) : (
+            <UserSideBarComponent />
+          )}
         </div>
         <div className="col">
           <h4>Password Update </h4>

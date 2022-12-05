@@ -6,19 +6,22 @@ import React, {
   SetStateAction,
 } from "react";
 import { Card, Tabs } from "antd";
-import { useAppSelector } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   ShoppingCartOutlined,
   HeartOutlined,
   StarOutlined,
 } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CarouselComponent from "./CarouselComponent";
 import ProductDescriptionListComponent from "./ProductDescriptionListComponent";
 import { rateProductRequest } from "../services/productService";
 import { Rate } from "antd";
 import { toast } from "react-toastify";
 import ModalComponent from "./ModalComponent";
+import { addProductTocart, IProduct } from "../redux/slices/productSlice";
+import { toggleDrawer } from "../redux/slices/cartDrawerSlice";
+import { add } from "../services/wishlistService";
 
 interface IcomponentProps {
   setRerenderAfterRatingChange: Dispatch<SetStateAction<boolean>>;
@@ -27,9 +30,13 @@ interface IcomponentProps {
 const SingleProductComponent: React.FC<IcomponentProps> = ({
   setRerenderAfterRatingChange,
 }) => {
-  const { product } = useAppSelector((state) => state.product);
+  const { product, cart } = useAppSelector((state) => state.product);
   const { user } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+  const [newProductRating, setNewProductRating] = useState(0);
+
   const averageRating = useMemo(
     () =>
       product &&
@@ -39,7 +46,31 @@ const SingleProductComponent: React.FC<IcomponentProps> = ({
         product.ratings.length,
     [product.ratings]
   );
-  const [newProductRating, setNewProductRating] = useState(0);
+
+  const handleAddToCart = (p: IProduct) => {
+    const existingItem = cart && cart.find((i: IProduct) => i._id === p._id);
+    if (existingItem) return;
+    dispatch(addProductTocart({ ...p, count: 1 }));
+    cart.length >= 1 && toast.success("Item added to the cart.");
+  };
+
+  const addToCartFromCover = (p: IProduct) => {
+    return !cart.length
+      ? (handleAddToCart(p), dispatch(toggleDrawer()))
+      : handleAddToCart(p);
+  };
+
+  const addToWishList = async () => {
+    try {
+      const data = await add(user.token, product._id);
+      if (data.ok) {
+        toast.success("Item was added to yours wishlist.");
+        navigate('/user/wishlist')
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -76,20 +107,24 @@ const SingleProductComponent: React.FC<IcomponentProps> = ({
       <div className="col-md-5">
         <h1 className="p-3 bg-info rounded text-center">{product.title}</h1>
         <div className="d-flex justify-content-between  align-items-center px-2">
-          <span className="h5 mr-3">Product Rating ({product?.ratings?.length}) : </span>{" "}
+          <span className="h5 mr-3">
+            Product Rating ({product?.ratings?.length}) :{" "}
+          </span>{" "}
           <Rate disabled className="mb-2" defaultValue={averageRating} />{" "}
         </div>
         <Card
           actions={[
             <>
-              <ShoppingCartOutlined className="text-success" /> <br />
+              <ShoppingCartOutlined
+                className="text-success"
+                onClick={() => addToCartFromCover(product)}
+                disabled={product.quantity === 0}
+              />{" "}
+              <br />
               Add to Cart
             </>,
             <>
-              <HeartOutlined
-                className="text-info"
-                onClick={() => navigate("/")}
-              />{" "}
+              <HeartOutlined className="text-info" onClick={addToWishList} />{" "}
               <br /> Add to Wishlist
             </>,
             <>

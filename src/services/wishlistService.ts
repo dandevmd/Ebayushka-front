@@ -1,30 +1,9 @@
 import axios from "axios";
-import { IproductInCart } from "../redux/slices/productSlice";
 
-export const saveUserCart = async (
-  token: string,
-  cart: IproductInCart[],
-) => {
-  try {
-    const { data } = await axios.post(
-      `${process.env.REACT_APP_API}/cart/save-cart`,
-      { cart },
-      {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return data;
-  } catch (error) {
-    error instanceof Error ? console.log(error.message) : console.log(error);
-  }
-};
-
-export const getCart = async (token: string) => {
+export const getAll = async (token: string) => {
   try {
     const { data } = await axios.get(
-      `${process.env.REACT_APP_API}/cart/get-cart`,
+      `${process.env.REACT_APP_API}/wishlist/get-all`,
 
       {
         headers: {
@@ -32,22 +11,43 @@ export const getCart = async (token: string) => {
         },
       }
     );
+
     return data;
   } catch (error) {
     error instanceof Error ? console.log(error.message) : console.log(error);
   }
 };
-export const removeCart = async (token: string) => {
-  try {
-    const { data } = await axios.delete(
-      `${process.env.REACT_APP_API}/cart/delete-cart`,
 
+export const add = async (token: string, productId: string) => {
+  try {
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_API}/wishlist//add-to-wishlist`,
+      { productId },
       {
         headers: {
           authorization: `Bearer ${token}`,
         },
       }
     );
+
+    return data;
+  } catch (error) {
+    error instanceof Error ? console.log(error.message) : console.log(error);
+  }
+};
+
+export const remove = async (token: string, productId: string) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_API}/wishlist/remove-from-wishlist`,
+      { productId },
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
     return data;
   } catch (error) {
     error instanceof Error ? console.log(error.message) : console.log(error);

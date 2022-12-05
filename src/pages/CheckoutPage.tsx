@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import AddressInput from "../components/AddressInput";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { updateDiscountPrice } from "../redux/slices/couponSlice";
+import {
+  resetDiscountedPrice,
+  updateDiscountPrice,
+} from "../redux/slices/couponSlice";
 import { emptyCart as emptyCartFront } from "../redux/slices/productSlice";
 import { saveAddress } from "../services/auth";
 import { getCart, removeCart } from "../services/cartService";
@@ -65,8 +68,8 @@ const CheckoutPage = () => {
       const data = await saveAddress(user?.token, address);
       if (data.ok) {
         refreshAddress();
-        toast.success("Order successfully saved");
-        navigate('/end-checkout')
+        toast.success("Address successfully saved");
+        navigate("/end-checkout");
       }
     } catch (error) {
       console.log(error);
@@ -79,9 +82,16 @@ const CheckoutPage = () => {
       if (data?.totalAfterDiscount) {
         dispatch(updateDiscountPrice(data?.totalAfterDiscount));
         toast.success("Congratulations you have a discount");
+        setCoupon('')
         return;
       }
-      toast.error("Your coupon is not valid");
+
+      if (data) {
+        toast.error(data as string);
+        setCoupon('')
+        return;
+      }
+      toast.error('This coupon was already applied')
       setCoupon("");
     } catch (error) {
       console.log(error);
@@ -95,7 +105,7 @@ const CheckoutPage = () => {
   return (
     <div className="row m-5 ">
       <div className="col-md-6">
-        <h4>Delivery Adress</h4>
+        <h4>Delivery Address</h4>
         <AddressInput addressChangeHandler={addressChangeHandler} />
         <hr />
         <br />
@@ -106,10 +116,11 @@ const CheckoutPage = () => {
             <input
               type="text"
               id="coupon"
+              value={coupon}
               className="form-control"
               onChange={(e) => setCoupon(e.target.value)}
             />
-            <button className="btn btn-primary" onClick={verifyCoupon}>
+            <button className="btn btn-primary my-2" onClick={verifyCoupon} disabled={!coupon}>
               Apply
             </button>
           </>
